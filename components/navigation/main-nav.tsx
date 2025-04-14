@@ -1,48 +1,48 @@
-'use client';
+"use client";
 
 import { cn } from "@/lib/utils";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@/context/AuthContext";
 import { BookMarked, Home, LineChart, Settings, Target } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const routes = [
   {
-    label: 'ホーム',
+    label: "ホーム",
     icon: Home,
-    href: '/dashboard',
-    color: 'text-sky-500',
+    href: "/dashboard",
+    color: "text-sky-500",
   },
   {
-    label: '目標設定',
+    label: "目標設定",
     icon: Target,
-    href: '/goals',
-    color: 'text-violet-500',
+    href: "/goals",
+    color: "text-violet-500",
   },
   {
-    label: 'タスク管理',
+    label: "タスク管理",
     icon: BookMarked,
-    href: '/tasks',
-    color: 'text-pink-700',
+    href: "/tasks",
+    color: "text-pink-700",
   },
   {
-    label: '進捗管理',
+    label: "進捗管理",
     icon: LineChart,
-    color: 'text-orange-700',
-    href: '/progress',
+    color: "text-orange-700",
+    href: "/progress",
   },
   {
-    label: '設定',
+    label: "設定",
     icon: Settings,
-    href: '/settings',
+    href: "/settings",
   },
 ];
 
 export function MainNav() {
   const pathname = usePathname();
-  const { userId } = useAuth();
+  const { user } = useAuth();
 
-  if (!userId) return null;
+  if (!user) return null;
 
   return (
     <nav className="flex flex-col gap-2">
@@ -52,7 +52,7 @@ export function MainNav() {
           href={route.href}
           className={cn(
             "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-primary/10 rounded-lg transition",
-            pathname === route.href ? "bg-primary/10" : "transparent",
+            pathname === route.href ? "bg-primary/10" : "transparent"
           )}
         >
           <div className="flex items-center flex-1">

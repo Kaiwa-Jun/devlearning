@@ -8,13 +8,31 @@ import {
   Target,
   ListTodo,
   FileBarChart,
+  User,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState, useEffect } from "react";
 
 export function Header() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  // クライアントサイドでのレンダリングを確認
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navItems = [
     {
@@ -39,6 +57,15 @@ export function Header() {
     },
   ];
 
+  // ログアウト処理
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("ログアウトエラー:", error);
+    }
+  };
+
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center border-b bg-white dark:bg-gray-900">
       <Link className="flex items-center justify-center" href="/">
@@ -59,12 +86,43 @@ export function Header() {
             {item.label}
           </Link>
         ))}
-        <Button asChild className="bg-blue-600 hover:bg-blue-700">
-          <Link href="/dashboard">
-            マイページへ
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
+
+        {mounted && user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="max-w-[150px] truncate">{user.email}</span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  マイページ
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="flex items-center gap-2 cursor-pointer text-red-500"
+              >
+                <LogOut className="h-4 w-4" />
+                ログアウト
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button asChild className="bg-blue-600 hover:bg-blue-700">
+            <Link href="/auth">
+              ログイン
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        )}
       </nav>
     </header>
   );
