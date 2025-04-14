@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { ClerkClientProvider } from "@/components/ClerkClientProvider";
 import { Header } from "@/components/navigation/header";
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkClientProvider>
+    <AuthProvider>
       <html lang="ja" suppressHydrationWarning>
         <body className={inter.className}>
           <ThemeProvider
@@ -37,6 +37,6 @@ export default function RootLayout({
           </ThemeProvider>
         </body>
       </html>
-    </ClerkClientProvider>
+    </AuthProvider>
   );
 }

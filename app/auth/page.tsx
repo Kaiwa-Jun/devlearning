@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Github, Mail } from "lucide-react";
-import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "@/components/ui/use-toast";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -22,18 +22,62 @@ const containerVariants = {
 };
 
 export default function AuthPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isSignIn, setIsSignIn] = useState(true);
-  const router = useRouter();
+  const { signIn, signUp, signInWithGithub, signInWithGoogle, isLoading } =
+    useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    // ここに認証ロジックを実装
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push("/dashboard");
-    }, 1000);
+
+    try {
+      if (isSignIn) {
+        await signIn(email, password);
+      } else {
+        const result = await signUp(email, password);
+        if (result.needsEmailVerification) {
+          toast({
+            title: "確認メールを送信しました",
+            description: "メールを確認して、アカウントを有効化してください。",
+            variant: "default",
+          });
+          setEmail("");
+          setPassword("");
+          return;
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: "エラーが発生しました",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleGithubSignIn = async () => {
+    try {
+      await signInWithGithub();
+    } catch (error: any) {
+      toast({
+        title: "Githubログインエラー",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error: any) {
+      toast({
+        title: "Googleログインエラー",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -58,11 +102,19 @@ export default function AuthPage() {
 
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" onClick={() => {}}>
+              <Button
+                variant="outline"
+                onClick={handleGithubSignIn}
+                disabled={isLoading}
+              >
                 <Github className="mr-2 h-4 w-4" />
                 Github
               </Button>
-              <Button variant="outline" onClick={() => {}}>
+              <Button
+                variant="outline"
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+              >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -97,11 +149,23 @@ export default function AuthPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">メールアドレス</Label>
-                <Input id="email" type="email" required />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">パスワード</Label>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 <Mail className="mr-2 h-4 w-4" />
