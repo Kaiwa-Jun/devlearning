@@ -1,16 +1,17 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
-import { ClerkClientProvider } from '@/components/ClerkClientProvider';
-import { Header } from '@/components/navigation/header';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { ClerkClientProvider } from "@/components/ClerkClientProvider";
+import { Header } from "@/components/navigation/header";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'DevLearning - Your Learning Journey',
-  description: 'Track your learning progress and achieve your development goals',
+  title: "DevLearning - Your Learning Journey",
+  description:
+    "Track your learning progress and achieve your development goals",
 };
 
 export default function RootLayout({
@@ -28,8 +29,10 @@ export default function RootLayout({
             enableSystem={false}
             disableTransitionOnChange
           >
-            <Header />
-            {children}
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <div className="flex-1">{children}</div>
+            </div>
             <Toaster />
           </ThemeProvider>
         </body>
