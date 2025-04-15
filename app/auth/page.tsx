@@ -5,10 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Github, Mail } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -25,8 +26,21 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignIn, setIsSignIn] = useState(true);
-  const { signIn, signUp, signInWithGithub, signInWithGoogle, isLoading } =
-    useAuth();
+  const {
+    signIn,
+    signUp,
+    signInWithGithub,
+    signInWithGoogle,
+    isLoading,
+    user,
+  } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
