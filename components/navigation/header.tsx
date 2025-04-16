@@ -99,10 +99,10 @@ export function Header() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link
-                  href="/dashboard"
+                  href="/mypage"
                   className="flex items-center gap-2 cursor-pointer"
                 >
-                  <LayoutDashboard className="h-4 w-4" />
+                  <User className="h-4 w-4" />
                   マイページ
                 </Link>
               </DropdownMenuItem>
